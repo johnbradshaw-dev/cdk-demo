@@ -1,0 +1,41 @@
+name: Destroy PR Stack
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Get PR number
+        id: pr
+        run: echo "PR_NUM=${{ github.event.number }}" >> $GITHUB_ENV
+
+      - name: Destroy CDK stack
+        run: cdk destroy --all -f -c prNumber=$PR_NUM
+        env:
+          CDK_DEFAULT_REGION: eu-west-2
+          CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }}
