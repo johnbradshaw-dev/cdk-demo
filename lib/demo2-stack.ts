@@ -4,12 +4,17 @@ import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { Rule } from "aws-cdk-lib/aws-events";
 import { LambdaFunction } from "aws-cdk-lib/aws-events-targets";
+import { RestApi, LambdaIntegration } from "aws-cdk-lib/aws-apigateway";
 
 export class Demo2Stack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const prNumber: string | undefined = process.env.PR_NUM;
+    const api = new RestApi(this, "Demo2Api", {
+      restApiName: `${id}-Api`,
+      description: "API for Demo 2",
+    });
 
     const eventBus = new cdk.aws_events.EventBus(this, "Demo2EventBus", {
       eventBusName: `${id}-EventBus`,
@@ -23,6 +28,10 @@ export class Demo2Stack extends cdk.Stack {
       environment: {
         EVENT_BUS_NAME: eventBus.eventBusName,
       },
+    });
+
+    api.root.addMethod("POST", new LambdaIntegration(instructFunction), {
+      operationName: "Instruct",
     });
 
     const searchFunction = new NodejsFunction(this, "SearchFunction", {
