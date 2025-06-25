@@ -50,8 +50,8 @@ if (!prNumber) {
 
 ```
 mkdir -p ./.github/actions/
-touch ./.github/actions/PR-open.yml
-touch ./.github/actions/PR-close.yml
+touch ./.github/workflows/PR-open.yml
+touch ./.github/workflows/PR-close.yml
 ```
 
 PR-open.yml
@@ -89,7 +89,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
 
