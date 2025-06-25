@@ -1,11 +1,15 @@
-import { APIGatewayProxyEvent, Context } from "aws-lambda";
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Context,
+} from "aws-lambda";
 
 import EventBridge from "aws-sdk/clients/eventbridge";
 
 export const handler: (
   event: APIGatewayProxyEvent,
   context: Context
-) => Promise<void> = async function (event, context) {
+) => Promise<APIGatewayProxyResult> = async function (event, context) {
   context.callbackWaitsForEmptyEventLoop = false;
   const request = JSON.parse(event.body ?? "{}");
   const res = {
@@ -26,4 +30,11 @@ export const handler: (
       ],
     })
     .promise();
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      message: "Request sent to event bus",
+      request: res,
+    }),
+  };
 };
