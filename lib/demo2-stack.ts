@@ -62,6 +62,20 @@ export class Demo2Stack extends cdk.Stack {
       },
     });
 
+    const statusFunction = new NodejsFunction(this, "StatusFunction", {
+      functionName: `${id}-StatusFunction`,
+      runtime: Runtime.NODEJS_22_X,
+      entry: "src/status/handler.ts",
+      handler: "handler",
+      environment: {
+        DYNAMODB_TABLE_NAME: dynamoTable.tableName,
+      },
+    });
+
+    api.root.addMethod("GET", new LambdaIntegration(statusFunction), {
+      operationName: "Instruct",
+    });
+
     eventBus.grantPutEventsTo(instructFunction);
 
     new Rule(this, "InstructEventRule", {
