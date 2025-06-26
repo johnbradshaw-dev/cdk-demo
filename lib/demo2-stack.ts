@@ -73,7 +73,7 @@ export class Demo2Stack extends cdk.Stack {
     });
 
     api.root.addMethod("GET", new LambdaIntegration(statusFunction), {
-      operationName: "Instruct",
+      operationName: "Status",
     });
 
     eventBus.grantPutEventsTo(instructFunction);
