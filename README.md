@@ -49,7 +49,7 @@ if (!prNumber) {
 ## Add github actions
 
 ```
-mkdir -p ./.github/actions/
+mkdir -p ./.github/workflows/
 touch ./.github/workflows/PR-open.yml
 touch ./.github/workflows/PR-close.yml
 ```
