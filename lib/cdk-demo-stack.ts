@@ -6,11 +6,20 @@ export class CdkDemoStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'CdkDemoQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const api = new cdk.aws_apigateway.RestApi(this, `${id}-DemoApi`, {
+      restApiName: 'Demo Service',
+      description: 'This service serves demo purposes.',
+    });
+
+    const postLamdba = new cdk.aws_lambda_nodejs.NodejsFunction(this, `${id}-PostLambda`, {
+      runtime: cdk.aws_lambda.Runtime.NODEJS_22_X,
+      entry: "src/instruct/handler.ts",
+      handler: "handler",
+    });
+    
+    const postEndpoint = api.root.addMethod('POST', new cdk.aws_apigateway.LambdaIntegration(postLamdba));
   }
+
 }
