@@ -16,6 +16,13 @@ export class Demo2Stack extends cdk.Stack {
       description: "API for Demo 2",
     });
 
+    const dynamoTable = new cdk.aws_dynamodb.Table(this, "Demo2Table", {
+      tableName: `${id}-Table`,
+      partitionKey: { name: "id", type: cdk.aws_dynamodb.AttributeType.STRING },
+      removalPolicy: cdk.RemovalPolicy.DESTROY, // Only for development purposes
+      billingMode: cdk.aws_dynamodb.BillingMode.PAY_PER_REQUEST,
+    });
+
     const eventBus = new cdk.aws_events.EventBus(this, "Demo2EventBus", {
       eventBusName: `${id}-EventBus`,
     });
@@ -27,6 +34,7 @@ export class Demo2Stack extends cdk.Stack {
       handler: "handler",
       environment: {
         EVENT_BUS_NAME: eventBus.eventBusName,
+        DYNAMODB_TABLE_NAME: dynamoTable.tableName,
       },
     });
 
@@ -39,6 +47,9 @@ export class Demo2Stack extends cdk.Stack {
       runtime: Runtime.NODEJS_22_X,
       entry: "src/search/handler.ts",
       handler: "handler",
+      environment: {
+        DYNAMODB_TABLE_NAME: dynamoTable.tableName,
+      },
     });
 
     const valuationFunction = new NodejsFunction(this, "ValuationFunction", {
@@ -46,6 +57,9 @@ export class Demo2Stack extends cdk.Stack {
       runtime: Runtime.NODEJS_22_X,
       entry: "src/valuation/handler.ts",
       handler: "handler",
+      environment: {
+        DYNAMODB_TABLE_NAME: dynamoTable.tableName,
+      },
     });
 
     eventBus.grantPutEventsTo(instructFunction);
