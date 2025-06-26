@@ -3,8 +3,7 @@ import {
     APIGatewayProxyResult,
     Context,
   } from "aws-lambda";
-  
-//   import EventBridge from "aws-sdk/clients/eventbridge";
+   import * as EventBridge from "aws-sdk/clients/eventbridge";
   
   export const handler: (
     event: APIGatewayProxyEvent,
@@ -16,20 +15,20 @@ import {
       request: request,
     };
   
-    // send the request to the event bus
-    // const eventBridge = new EventBridge();
-    // await eventBridge
-    //   .putEvents({
-    //     Entries: [
-    //       {
-    //         Source: "InstructFunction",
-    //         DetailType: "instruct",
-    //         Detail: JSON.stringify(res),
-    //         EventBusName: process.env.EVENT_BUS_NAME,
-    //       },
-    //     ],
-    //   })
-    //   .promise();
+    //send the request to the event bus
+    const eventBridge = new EventBridge();
+    await eventBridge
+      .putEvents({
+        Entries: [
+          {
+            Source: "InstructFunction",
+            DetailType: "instruct",
+            Detail: JSON.stringify(res),
+            EventBusName: process.env.EVENT_BUS_NAME,
+          },
+        ],
+      })
+      .promise();
 
     return {
       statusCode: 200,
